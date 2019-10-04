@@ -2,7 +2,7 @@ CC = g++
 SRC = src/main.cpp src/largeint.cpp
 INC = -I inc
 OBJ = main.o largeint.o
-TARGET = test
+TARGET = bin/test
 CXXFLAGS = -Wall 
 
 $(TARGET) : $(OBJ)
@@ -11,7 +11,10 @@ $(TARGET) : $(OBJ)
 $(OBJ) : $(SRC)
 	$(CC) $(CXXFLAGS) $(INC) -c $(SRC)
 
-.PHONY : clean
+.PHONY : clean cleanobj
 
 clean : $(OBJ) $(TARGET)
 	del $(OBJ) $(TARGET).exe
+
+cleanobj : $(OBJ)
+	del $(OBJ)
