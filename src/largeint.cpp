@@ -11,7 +11,7 @@ unsigned short valAtDigitIndex(const int index, const unsigned long long val)
 //simple conversion from character representing a digit to a digit; returns 10 if incorrect range, which is error code as impossible for single digit
 unsigned short digitShortFromChar(const char val)
 {
-    return (val > 48 && val < 59) ? val - 48 : 10;
+    return (val > 47 && val < 59) ? val - 48 : 10;
 }
 
 char charFromDigitShort(const unsigned short val)
@@ -27,6 +27,7 @@ bool flagNonDigitCharacters(const std::string &str)
     {
         flag *= digitShortFromChar(i) != 10;
     }
+    return flag;
 }
 
 LargeInt::LargeInt(const unsigned long long init_val)
@@ -55,14 +56,16 @@ LargeInt::LargeInt(const std::string &init_string)
     }
 }
 
+//appends each digit from least to greatest value
 std::string LargeInt::representedValue() const
 {
     std::string ret_val{0};
-    for (size_t i{m_shorts.size() - 1}; i >= 0; i--)
+    for (size_t i{m_shorts.size()}; i > 0; i -= 1)
     {
-        ret_val.append(charFromDigitShort(m_shorts.at(i)));
+        std::cout << i - 1 << std::endl;
+        ret_val.push_back(charFromDigitShort(m_shorts.at(i - 1)));
     }
-    //appends each digit, checking whether that digit can exist in init_val beforehand, from least to greatest value
+    return ret_val;
 }
 
 LargeInt::operator std::string() const
