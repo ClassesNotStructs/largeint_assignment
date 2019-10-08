@@ -12,7 +12,10 @@ public:
 
     std::string representedValue() const;
 
+    //cast to std::string is same as calling representedvalue
     operator std::string() const;
+
+    friend std::ostream &operator<<(std::ostream &, const LargeInt &val);
 
 private:
     std::vector<unsigned short> m_shorts;

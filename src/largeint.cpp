@@ -43,17 +43,29 @@ LargeInt::LargeInt(const unsigned long long init_val)
 
 LargeInt::LargeInt(const std::string &init_string)
 {
-    if (flagNonDigitCharacters(init_string) || (init_string.begin() == init_string.end()))
+    if (!flagNonDigitCharacters(init_string) || (init_string.begin() == init_string.end()))
     {
         m_shorts.clear();
         m_shorts.push_back(0);
         return;
     }
 
-    for (size_t index{init_string.length() - 1}; index >= 0; index++)
+    for (size_t index{init_string.length()}; index > 0; index--)
     {
-        m_shorts.push_back(digitShortFromChar(init_string[index]));
+        m_shorts.push_back(digitShortFromChar(init_string[index - 1]));
+        //std::cout << digitShortFromChar(init_string[index]) << std::endl;
     }
+}
+
+std::ostream &operator<<(std::ostream &out, const LargeInt &val)
+{
+    out << val.representedValue();
+    return out;
+}
+
+LargeInt::operator std::string() const
+{
+    return representedValue();
 }
 
 //appends each digit from least to greatest value
@@ -66,9 +78,4 @@ std::string LargeInt::representedValue() const
         ret_val.push_back(charFromDigitShort(m_shorts.at(i - 1)));
     }
     return ret_val;
-}
-
-LargeInt::operator std::string() const
-{
-    return representedValue();
 }
