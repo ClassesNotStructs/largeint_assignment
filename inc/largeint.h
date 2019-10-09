@@ -15,6 +15,18 @@ public:
     //cast to std::string is same as calling representedvalue
     operator std::string() const;
 
+    bool operator<(const LargeInt &val);
+
+    bool operator>(const LargeInt &val);
+
+    bool operator<=(const LargeInt &val);
+
+    bool operator>=(const LargeInt &val);
+
+    bool operator==(const LargeInt &val);
+
+    bool operator!=(const LargeInt &val);
+
     friend std::ostream &operator<<(std::ostream &, const LargeInt &val);
 
 private:

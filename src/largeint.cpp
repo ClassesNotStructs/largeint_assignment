@@ -2,6 +2,117 @@
 #include <iostream>
 #include <cmath>
 
+//make the side effect thing better - ensure that neither operand is mutable
+bool LargeInt::operator<(const LargeInt &val)
+{
+    //avoids resizing as a side effect
+    std::vector<unsigned short> modifiable{val.m_shorts};
+
+    if (m_shorts.size() < val.m_shorts.size())
+    {
+        m_shorts.resize(val.m_shorts.size());
+    }
+
+    else if (val.m_shorts.size() < m_shorts.size())
+    {
+        modifiable.resize(m_shorts.size());
+    }
+
+    /*
+    std::cout << 'n' << '\n';
+    for (unsigned short cur : m_shorts)
+    {
+        std::cout << cur << '\n';
+    }
+    std::cout << '-' << '\n';
+    for (unsigned short cur : val.m_shorts)
+    {
+        std::cout << cur << '\n';
+    }
+    std::cout << '-' << '\n';
+    for (unsigned short cur : modifiable)
+    {
+        std::cout << cur << '\n';
+    }
+    */
+
+    for (size_t index{m_shorts.size()}; index > 0; index--)
+    {
+        if (m_shorts[index - 1] < modifiable[index - 1])
+        {
+            return true;
+        }
+        else if (m_shorts[index - 1] > modifiable[index - 1])
+        {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool LargeInt::operator>(const LargeInt &val)
+{
+    //avoids resizing as a side effect
+    std::vector<unsigned short> modifiable{val.m_shorts};
+
+    if (m_shorts.size() < val.m_shorts.size())
+    {
+        m_shorts.resize(val.m_shorts.size());
+    }
+
+    else if (val.m_shorts.size() < m_shorts.size())
+    {
+        modifiable.resize(m_shorts.size());
+    }
+
+    /*
+    std::cout << 'n' << '\n';
+    for (unsigned short cur : m_shorts)
+    {
+        std::cout << cur << '\n';
+    }
+    std::cout << '-' << '\n';
+    for (unsigned short cur : val.m_shorts)
+    {
+        std::cout << cur << '\n';
+    }
+    std::cout << '-' << '\n';
+    for (unsigned short cur : modifiable)
+    {
+        std::cout << cur << '\n';
+    }
+    */
+
+    for (size_t index{m_shorts.size()}; index > 0; index--)
+    {
+        if (m_shorts[index - 1] > modifiable[index - 1])
+        {
+            return true;
+        }
+        else if (m_shorts[index - 1] < modifiable[index - 1])
+        {
+            return false;
+        }
+    }
+    return false;
+}
+bool LargeInt::operator<=(const LargeInt &val)
+{
+    return !(*this > val);
+}
+bool LargeInt::operator>=(const LargeInt &val)
+{
+    return !(*this < val);
+}
+bool LargeInt::operator==(const LargeInt &val)
+{
+    return !(*this < val) && !(*this > val);
+}
+bool LargeInt::operator!=(const LargeInt &val)
+{
+    return !(*this == val);
+}
+
 //basically will return the single-digit value at an index in a number (measured from r->l, starts at 0)
 unsigned short valAtDigitIndex(const int index, const unsigned long long val)
 {
