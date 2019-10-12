@@ -27,6 +27,9 @@ public:
 
     bool operator!=(const LargeInt &val);
 
+    friend LargeInt operator+(const LargeInt &intA, const LargeInt &intB);
+    friend LargeInt operator-(const LargeInt &intA, const LargeInt &intB);
+
     friend std::ostream &operator<<(std::ostream &, const LargeInt &val);
 
 private:
