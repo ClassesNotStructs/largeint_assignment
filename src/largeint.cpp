@@ -255,6 +255,7 @@ LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
     LargeInt tmp_mod{intA};
     if (tmp_mod.operator<=(intB))
         return 0;
+
     LargeInt sumAB{};
     sumAB.m_shorts.clear();
 
@@ -268,8 +269,8 @@ LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
               << Bsize << '\n'
               << std::endl;
 
-    unsigned short dig_sum{0};
-    unsigned short dig_sum_carry{0};
+    short tmp_buf{0};
+    short reduction_buffer{0};
 
     unsigned short A_dig{0};
     unsigned short B_dig{0};
@@ -280,22 +281,28 @@ LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
         std::cout << "iteration " << i << std::endl;
         if (i >= Asize && i >= Bsize)
         {
-            sumAB.m_shorts.push_back(dig_sum_carry);
+            if (A_dig - B_dig < 0)
+            {
+                if (tmp_buf - Bvec[i + 1] >= 0)
+                {
+                    sumAB.m_shorts.at(i + 1) = tmp_buf - Bvec[i + 1];
+                }
+                else
+                {
+                    return LargeInt{0};
+                }
+            }
             break;
-        }
-        else if (i >= Avec.size())
-        {
-            A_dig = 0;
-            B_dig = Bvec.at(i);
-            std::cout << "na" << '\n'
-                      << Bvec.at(i) << ", " << B_dig << std::endl;
         }
         else if (i >= Bvec.size())
         {
-            A_dig = Avec.at(i);
-            B_dig = 0;
-            std::cout << Avec.at(i) << ", " << A_dig << '\n'
-                      << "na" << std::endl;
+            sumAB.m_shorts.push_back(Avec.at(i));
+            ++i;
+            continue;
+        }
+        else if (i >= Avec.size())
+        {
+            return LargeInt{0};
         }
         else
         {
@@ -304,13 +311,45 @@ LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
             B_dig = Bvec.at(i);
             std::cout << Bvec.at(i) << ", " << B_dig << std::endl;
         }
-        std::cout << "A" << A_dig << "\nB" << B_dig << "\nC" << dig_sum_carry << std::endl;
-        dig_sum = A_dig + B_dig + dig_sum_carry;
-        dig_sum_carry = dig_sum / 10;
-        dig_sum %= 10;
-        std::cout << dig_sum << std::endl;
-        sumAB.m_shorts.push_back(dig_sum);
-        dig_sum = 0;
+        std::cout << "A" << A_dig << "\nB" << B_dig << "\nC" << std::endl;
+
+        tmp_buf = A_dig - B_dig /* + dig_sum_carry*/;
+
+        if (tmp_buf >= 0)
+        {
+            sumAB.m_shorts.push_back(tmp_buf);
+        }
+
+        else
+        {
+            std::vector<signed int> tmp_vector{};
+
+            signed short j{i};
+            while (tmp_buf < 0)
+            {
+                if (j >= Avec.size())
+                {
+                    return LargeInt{0};
+                }
+
+                sumAB.m_shorts.push_back(tmp_buf + 10);
+                tmp_buf = Avec.at(j + 1) - 1;
+                /*
+                if (tmp_buf >= 0)
+                {
+                    if (tmp_buf - Bvec.at(j + 1) >= 0)
+                    {
+                        sumAB.m_shorts.push_back(tmp_buf);
+                        ++i;
+                        break;
+                    }
+                    tmp_buf -= BVec.at(j + 1);
+                }
+                */
+                j += 1;
+            }
+        }
+
         ++i;
     }
     return sumAB;
