@@ -15,7 +15,7 @@ public:
     //cast to std::string is same as calling representedvalue
     operator std::string() const;
 
-    bool operator<(const LargeInt &val);
+    friend bool operator<(const LargeInt &val_1, const LargeInt &val_2);
 
     bool operator>(const LargeInt &val);
 
@@ -33,5 +33,6 @@ public:
     friend std::ostream &operator<<(std::ostream &, const LargeInt &val);
 
 private:
+    LargeInt *shrinkPreceedingZeroes();
     std::vector<unsigned short> m_shorts;
 };
