@@ -27,24 +27,26 @@ bool flagNonDigitCharacters(const std::string &str)
     {
         flag *= digitShortFromChar(i) != 10;
     }
-    return flag;
+    return !flag;
 }
 
 LargeInt::LargeInt(const unsigned long long init_val)
 {
     //pushes back each digit, checking whether that digit can exist in init_val beforehand, from least to greatest value
     int n{0};
+
     do
     {
         m_shorts.push_back(valAtDigitIndex(n, init_val));
         n += 1;
     } while (init_val / pow(10, n) >= 1);
+
     shrinkPreceedingZeroes();
 }
 
 LargeInt::LargeInt(const std::string &init_string)
 {
-    if (!flagNonDigitCharacters(init_string) || (init_string.begin() == init_string.end()))
+    if (!flagNonDigitCharacters(init_string) || init_string.empty())
     {
         m_shorts.clear();
         m_shorts.push_back(0);
@@ -59,115 +61,40 @@ LargeInt::LargeInt(const std::string &init_string)
     shrinkPreceedingZeroes();
 }
 
-//make the side effect thing better - ensure that neither operand is mutable
+//simply compares the vectors as is more efficient and accurate
 bool operator<(const LargeInt &val_1, const LargeInt &val_2)
 {
     return val_1.m_shorts < val_2.m_shorts;
-    /*
-    //avoids resizing as a side effect
-    std::vector<unsigned short> modifiable{val.m_shorts};
-
-    if (m_shorts.size() < val.m_shorts.size())
-    {
-        m_shorts.resize(val.m_shorts.size());
-    }
-
-    else if (val.m_shorts.size() < m_shorts.size())
-    {
-        modifiable.resize(m_shorts.size());
-    }
-
-    std::cout << 'n' << '\n';
-    for (unsigned short cur : m_shorts)
-    {
-        std::cout << cur << '\n';
-    }
-    std::cout << '-' << '\n';
-    for (unsigned short cur : val.m_shorts)
-    {
-        std::cout << cur << '\n';
-    }
-    std::cout << '-' << '\n';
-    for (unsigned short cur : modifiable)
-    {
-        std::cout << cur << '\n';
-    }
-    for (size_t index{m_shorts.size()}; index > 0; index--)
-    {
-        if (m_shorts[index - 1] < modifiable[index - 1])
-        {
-            return true;
-        }
-        else if (m_shorts[index - 1] > modifiable[index - 1])
-        {
-            return false;
-        }
-    }
-    return false;
-    */
 }
 
-bool LargeInt::operator>(const LargeInt &val)
+//not less than or equal
+bool operator>(const LargeInt &val_1, const LargeInt &val_2)
 {
-    //avoids resizing as a side effect
-    std::vector<unsigned short> modifiable{val.m_shorts};
-
-    if (m_shorts.size() < val.m_shorts.size())
-    {
-        m_shorts.resize(val.m_shorts.size());
-    }
-
-    else if (val.m_shorts.size() < m_shorts.size())
-    {
-        modifiable.resize(m_shorts.size());
-    }
-
-    /*
-    std::cout << 'n' << '\n';
-    for (unsigned short cur : m_shorts)
-    {
-        std::cout << cur << '\n';
-    }
-    std::cout << '-' << '\n';
-    for (unsigned short cur : val.m_shorts)
-    {
-        std::cout << cur << '\n';
-    }
-    std::cout << '-' << '\n';
-    for (unsigned short cur : modifiable)
-    {
-        std::cout << cur << '\n';
-    }
-    */
-
-    for (size_t index{m_shorts.size()}; index > 0; index--)
-    {
-        if (m_shorts[index - 1] > modifiable[index - 1])
-        {
-            return true;
-        }
-        else if (m_shorts[index - 1] < modifiable[index - 1])
-        {
-            return false;
-        }
-    }
-    return false;
+    return !(val_1 < val_2) && !(val_1 == val_2);
 }
-bool LargeInt::operator<=(const LargeInt &val)
+
+//not greater than
+bool operator<=(const LargeInt &val_1, const LargeInt &val_2)
 {
-    return !(*this > val);
+    return !(val_1 > val_2);
 }
-bool LargeInt::operator>=(const LargeInt &val)
+
+//not less than
+bool operator>=(const LargeInt &val_1, const LargeInt &val_2)
 {
-    return !(*this < val);
+    return !(val_1 < val_2);
 }
-bool LargeInt::operator==(const LargeInt &val)
+
+//compares vectors
+bool operator==(const LargeInt &val_1, const LargeInt &val_2)
 {
-    return !(*this < val) && !(*this > val);
+    return val_1.m_shorts == val_2.m_shorts;
 }
-bool LargeInt::operator!=(const LargeInt &val)
+
+//not equal
+bool operator!=(const LargeInt &val_1, const LargeInt &val_2)
 {
-    return !(*this == val);
+    return !(val_1 == val_2);
 }
 
 std::ostream &operator<<(std::ostream &out, const LargeInt &val)
@@ -256,7 +183,7 @@ LargeInt operator+(const LargeInt &intA, const LargeInt &intB)
 LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
 {
     LargeInt tmp_mod{intA};
-    if (tmp_mod.operator<=(intB))
+    if (intA <= intB)
         return 0;
 
     std::vector<signed int> tmp_buf_vec{};

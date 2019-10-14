@@ -16,16 +16,11 @@ public:
     operator std::string() const;
 
     friend bool operator<(const LargeInt &val_1, const LargeInt &val_2);
-
-    bool operator>(const LargeInt &val);
-
-    bool operator<=(const LargeInt &val);
-
-    bool operator>=(const LargeInt &val);
-
-    bool operator==(const LargeInt &val);
-
-    bool operator!=(const LargeInt &val);
+    friend bool operator>(const LargeInt &val_1, const LargeInt &val_2);
+    friend bool operator<=(const LargeInt &val_1, const LargeInt &val_2);
+    friend bool operator>=(const LargeInt &val_1, const LargeInt &val_2);
+    friend bool operator==(const LargeInt &val_1, const LargeInt &val_2);
+    friend bool operator!=(const LargeInt &val_1, const LargeInt &val_2);
 
     friend LargeInt operator+(const LargeInt &intA, const LargeInt &intB);
     friend LargeInt operator-(const LargeInt &intA, const LargeInt &intB);

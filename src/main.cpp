@@ -7,6 +7,6 @@ int main()
     //std::cout << test.representedValue() << std::endl;
     LargeInt test1{5714875};
     LargeInt test2{"04781924"};
-    std::cout << test2 << std::endl;
+    std::cout << (test2 <= test1) << " " << (test1 >= test2) << std::endl;
     return 0;
 }
