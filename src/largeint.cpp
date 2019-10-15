@@ -1,4 +1,5 @@
 #include "largeint.h"
+#include <sstream>
 #include <iostream>
 #include <cmath>
 
@@ -41,7 +42,9 @@ LargeInt::LargeInt(const unsigned long long init_val)
         n += 1;
     } while (init_val / pow(10, n) >= 1);
 
+    std::cout << "before: " << representedValue() << std::endl;
     shrinkPreceedingZeroes();
+    std::cout << "after: " << representedValue() << std::endl;
 }
 
 LargeInt::LargeInt(const std::string &init_string)
@@ -114,32 +117,14 @@ LargeInt operator+(const LargeInt &intA, const LargeInt &intB)
     const size_t Asize{Avec.size()};
     const size_t Bsize{Bvec.size()};
 
-    std::cout << Asize << '\n'
-              << Bsize << '\n'
-              << std::endl;
-
     unsigned short dig_sum{0};
     unsigned short dig_sum_carry{0};
-    /*
-    for (size_t i{0}; i < max; i++)
-    {
-        std::cout << i << std::endl;
-        std::cout << Avec.at(i) << '\n'
-                  << Bvec.at(i) << '\n'
-                  << sumAB.m_shorts.at(i) << '\n';
-        dig_sum = Avec.at(i) + Bvec.at(i) + dig_sum_carry;
-        dig_sum_carry = dig_sum / 10;
-        dig_sum %= 10;
-        sumAB.m_shorts.at(i) = dig_sum;
-        dig_sum = 0;
-    }
-    */
+
     size_t i{0};
     unsigned short A_dig{0};
     unsigned short B_dig{0};
     while (true)
     {
-        std::cout << "iteration " << i << std::endl;
         if (i >= Asize && i >= Bsize)
         {
             sumAB.m_shorts.push_back(dig_sum_carry);
@@ -149,28 +134,20 @@ LargeInt operator+(const LargeInt &intA, const LargeInt &intB)
         {
             A_dig = 0;
             B_dig = Bvec.at(i);
-            std::cout << "na" << '\n'
-                      << Bvec.at(i) << ", " << B_dig << std::endl;
         }
         else if (i >= Bvec.size())
         {
             A_dig = Avec.at(i);
             B_dig = 0;
-            std::cout << Avec.at(i) << ", " << A_dig << '\n'
-                      << "na" << std::endl;
         }
         else
         {
             A_dig = Avec.at(i);
-            std::cout << Avec.at(i) << ", " << A_dig << std::endl;
             B_dig = Bvec.at(i);
-            std::cout << Bvec.at(i) << ", " << B_dig << std::endl;
         }
-        std::cout << "A" << A_dig << "\nB" << B_dig << "\nC" << dig_sum_carry << std::endl;
         dig_sum = A_dig + B_dig + dig_sum_carry;
         dig_sum_carry = dig_sum / 10;
         dig_sum %= 10;
-        std::cout << dig_sum << std::endl;
         sumAB.m_shorts.push_back(dig_sum);
         dig_sum = 0;
         ++i;
@@ -243,6 +220,41 @@ LargeInt operator-(const LargeInt &intA, const LargeInt &intB)
     return difAB;
 }
 
+LargeInt operator*(const LargeInt &intA, const LargeInt &intB)
+{
+    std::cout << std::endl;
+    std::cout << "starting multiplication\n";
+
+    LargeInt final_result{0};
+
+    LargeInt it_result{0};
+
+    for (size_t i{0}; i < intB.m_shorts.size(); i++)
+    {
+        std::cout << "in outer loop\n";
+        for (size_t j{0}; j < intA.m_shorts.size(); j++)
+        {
+            std::cout << "in inner loop\n";
+            LargeInt tmp{(unsigned short)(intA.m_shorts.at(j) * intB.m_shorts.at(i))};
+            std::cout << "result of digit multiplication: " << tmp << std::endl;
+
+            //multiply by 10 to power of current index
+            for (size_t k{j}; k > 0; k--)
+            {
+                tmp.m_shorts.insert(tmp.m_shorts.begin(), 1, 0);
+            }
+        }
+        //multiply by 10 to power of current index
+        for (size_t k{i}; k > 0; k--)
+        {
+            it_result.m_shorts.insert(it_result.m_shorts.begin(), 1, 0);
+        }
+
+        final_result = final_result + it_result;
+    }
+    return final_result;
+}
+
 LargeInt::operator std::string() const
 {
     return representedValue();
@@ -251,11 +263,10 @@ LargeInt::operator std::string() const
 //appends each digit from least to greatest value
 std::string LargeInt::representedValue() const
 {
-    std::string ret_val{0};
+    std::string ret_val{};
     for (size_t i{m_shorts.size()}; i > 0; i -= 1)
     {
-        std::cout << i - 1 << std::endl;
-        ret_val.push_back(charFromDigitShort(m_shorts.at(i - 1)));
+        ret_val += charFromDigitShort(m_shorts.at(i - 1));
     }
     return ret_val;
 }
@@ -264,6 +275,10 @@ LargeInt *LargeInt::shrinkPreceedingZeroes()
 {
     while (!m_shorts[m_shorts.size() - 1])
     {
+        if (m_shorts.size() == 1 && m_shorts.at(0) == 0)
+        {
+            return this;
+        }
         m_shorts.pop_back();
     }
     return this;
