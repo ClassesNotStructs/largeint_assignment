@@ -3,16 +3,14 @@
 #include <iostream>
 #include <sstream>
 
-// basically will return the single-digit value at an index in a number
-// (measured from r->l, starts at 0)
-unsigned short valAtDigitIndex(const int index, const unsigned long long val)
+//returns index from r->l in a num; eg 76, 0 is 6; 578, 2 is 5
+inline unsigned short valAtDigitIndex(const int index, const unsigned long long val)
 {
   return (val % static_cast<int>(round(pow(10, index + 1)))) / pow(10, index);
 }
 
-// simple conversion from character representing a digit to a digit; returns 10
-// if incorrect range, which is error code as impossible for single digit
-unsigned short digitShortFromChar(const char val)
+//returns the numerical value of a character-represented digit if it is within single-digit range, and 10 (error) if not
+inline unsigned short digitShortFromChar(const char val)
 {
   return (val > 47 && val < 59) ? val - 48 : 10;
 }
@@ -32,76 +30,52 @@ bool possessesNonDigitCharacters(const std::string &str)
 
 LargeInt::LargeInt(const unsigned long long init_val)
 {
-  // pushes back each digit, checking whether that digit can exist in init_val
-  // beforehand, from least to greatest value
-  int n{0};
+  int n{0}; //counter
 
   do
   {
-    m_shorts.push_back(valAtDigitIndex(n, init_val));
-    n += 1;
-  } while (init_val / pow(10, n) >= 1);
-
-  shrinkPreceedingZeroes();
+    m_shorts.push_back(valAtDigitIndex(n++, init_val)); //push back digit spots from least to greatest value
+  } while (init_val / pow(10, n) >= 1);                 //can't exceed the long's value during push_back
 }
 
 LargeInt::LargeInt(const std::string &init_string)
 {
+  //input checking
   if (possessesNonDigitCharacters(init_string) || init_string.empty())
   {
-    std::cout << "bruh" << std::endl;
-    m_shorts.clear();
-    m_shorts.push_back(0);
+    m_shorts = {0};
     return;
   }
 
+  //push the indices back in reverse order
   for (size_t index{init_string.length()}; index > 0; index--)
   {
-    m_shorts.push_back(digitShortFromChar(init_string[index - 1]));
-    // std::cout << digitShortFromChar(init_string[index]) << std::endl;
+    m_shorts.push_back(init_string[index - 1] - 48); //already did input checking, so just subtract 48 for conversion
   }
-  shrinkPreceedingZeroes();
+
+  shrinkPreceedingZeroes(); //retroactively ensure no pointless zeroes are placed in the vector
 }
 
-// simply compares the vectors as is more efficient and accurate
+//compares the values of two LargeInts by comparing their sizes, then their digits from greatest to least value
 bool operator<(const LargeInt &val_1, const LargeInt &val_2)
 {
-  /*
-  std::cout << std::endl;
-  for (unsigned short val : val_1.m_shorts)
-  {
-    std::cout << val << ", ";
-  }
-  std::cout << std::endl;
-  for (unsigned short val : val_2.m_shorts)
-  {
-    std::cout << val << ", ";
-  }
-  std::cout << std::endl;
-  if (val_1.m_shorts < val_2.m_shorts)
-  {
-    std::cout << val_1 << "is less than " << val_2 << std::endl;
-    return 1;
-  }
-  else
-  {
-    std::cout << val_1 << "is not less than " << val_2 << std::endl;
-    return 0;
-  }
-  */
-
+  //first check sizes and equality
   if (val_1.m_shorts.size() < val_2.m_shorts.size())
   {
     return 1;
   }
+
+  if (val_1.m_shorts.size() > val_2.m_shorts.size())
+  {
+    return 0;
+  }
+
   if (val_1 == val_2)
   {
     return 0;
   }
-  if (val_2.m_shorts.size() < val_1.m_shorts.size())
-  {
-    return 0;
-  }
+
+  //individual digit comparison, returns result upon finding any difference between digits
   for (size_t i{val_1.m_shorts.size()}; i > 0; i--)
   {
     if ((val_1.m_shorts.at(i - 1) > val_2.m_shorts.at(i - 1)))
@@ -113,39 +87,41 @@ bool operator<(const LargeInt &val_1, const LargeInt &val_2)
       return 1;
     }
   }
-  return 1;
+
+  return 0; //impossible, but most likely to be equal
 }
 
-// not less than or equal
+//determines whether one largeint is greater than another by checking whether it is less than or equal to it
 bool operator>(const LargeInt &val_1, const LargeInt &val_2)
 {
   return !(val_1 < val_2) && !(val_1 == val_2);
 }
 
-// not greater than
+//determines whether one largeint is less than or equal to another by checking whether it is greater than it
 bool operator<=(const LargeInt &val_1, const LargeInt &val_2)
 {
   return !(val_1 > val_2);
 }
 
-// not less than
+//determines whether one largeint is greater than or equal to another by checking whether it is less than it
 bool operator>=(const LargeInt &val_1, const LargeInt &val_2)
 {
   return !(val_1 < val_2);
 }
 
-// compares vectors
+//determines equality of two largeints by comparing their vectors
 bool operator==(const LargeInt &val_1, const LargeInt &val_2)
 {
   return val_1.m_shorts == val_2.m_shorts;
 }
 
-// not equal
+//applies not to the equality of two largeints
 bool operator!=(const LargeInt &val_1, const LargeInt &val_2)
 {
   return !(val_1 == val_2);
 }
 
+//overloaded ostream operator
 std::ostream &operator<<(std::ostream &out, const LargeInt &val)
 {
   out << val.representedValue();
