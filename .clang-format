@@ -1,0 +1,6 @@
+Language: Cpp
+PointerAlignment: Left
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBraces: Allman
+ColumnLimit: 0
+
