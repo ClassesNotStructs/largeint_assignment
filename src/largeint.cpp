@@ -36,9 +36,7 @@ LargeInt::LargeInt(const unsigned long long init_val) {
     n += 1;
   } while (init_val / pow(10, n) >= 1);
 
-  std::cout << "before: " << representedValue() << std::endl;
   shrinkPreceedingZeroes();
-  std::cout << "after: " << representedValue() << std::endl;
 }
 
 LargeInt::LargeInt(const std::string &init_string) {
