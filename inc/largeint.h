@@ -3,8 +3,12 @@
 #include <string>
 #include <vector>
 
-class LargeInt {
+class LargeInt
+{
 public:
+  friend LargeInt reverseSliceFrontalNumber(const LargeInt &val, size_t ind_from_left); //zero gives the 1 digit, 1 the 1 then 10, so on
+  friend LargeInt inefficDiv(const LargeInt &intA, const LargeInt &intB);
+
   LargeInt(const unsigned long long init_val = 0);
 
   LargeInt(const std::string &init_string);
@@ -33,6 +37,7 @@ public:
   friend LargeInt operator+(const LargeInt &intA, const LargeInt &intB);
   friend LargeInt operator-(const LargeInt &intA, const LargeInt &intB);
   friend LargeInt operator*(const LargeInt &intA, const LargeInt &intB);
+  friend LargeInt operator/(const LargeInt &intA, const LargeInt &intB);
 
   friend std::ostream &operator<<(std::ostream &, const LargeInt &val);
 
