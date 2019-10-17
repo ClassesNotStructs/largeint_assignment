@@ -9,7 +9,7 @@ const unsigned short DIGIT_ERROR{10};
 // single-digit range, and 10 (error) if not
 inline unsigned short digitShortFromChar(const char val)
 {
-  return (val > 47 && val < 59) ? val - 48 : DIGIT_ERROR;
+  return (val > 47 && val < 59) ? val - '0' : DIGIT_ERROR;
 }
 
 // checks that each char in a string is in the digit range, returns 0 if not
