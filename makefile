@@ -6,7 +6,7 @@ TARGET = bin/test
 CXXFLAGS = -Wall 
 
 $(TARGET) : $(OBJ)
-	$(CC) -o $@ $^
+	$(CC) $(CXXFLAGS) -o $@ $^
 
 $(OBJ) : $(SRC)
 	$(CC) $(CXXFLAGS) $(INC) -c $(SRC)
