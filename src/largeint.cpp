@@ -225,7 +225,7 @@ LargeInt operator-(const LargeInt& intA, const LargeInt& intB)
   }
 
   LargeInt difAB{0};
-  difAB.shrinkPreceedingZeroes();
+  difAB.m_shorts.clear();
 
   //copy values while avoiding narrowing
   for (int v : tmp_buf_vec)
